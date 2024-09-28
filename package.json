@@ -1,0 +1,16 @@
+{
+  "name": "nytime",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "parcel serve src/",
+    "build": "parcel build --public-url https://github.io/ConcepcionPaul/Nytimes_Clone src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  }
+}
