@@ -1,0 +1,228 @@
+/* General styling */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the body takes the full height */
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('https://res.cloudinary.com/doka2wyj0/image/upload/v1727497646/ja/icon/yem1fwofrhvkqi7k191f.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #333;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 40px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Navigation Styling */
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav a {
+    color: white;
+    font-size: 18px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #007bff;
+}
+
+.search-bar {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 400px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: #007bff;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    position: absolute;
+    right: 15px;
+    top: 12px;
+}
+
+.search-bar button img {
+    width: 24px;
+}
+
+#suggestions-container {
+    position: absolute;
+    top: 60px;
+    background-color: rgb(0, 0, 0);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-height: 220px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.suggestion {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 15px;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.suggestion:hover {
+    background-color: #f1f1f1;
+}
+
+#reviews-container {
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 1200px;
+    flex-grow: 1;
+}
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    border: 1px solid #e3e3e3;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.image {
+    flex-shrink: 0;
+    width: 220px;
+    height: 200px;
+    margin-right: 20px;
+}
+
+.book-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.card__info {
+    flex-grow: 1;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.title:hover {
+    text-decoration: underline;
+}
+
+.author {
+    font-size: 18px;
+    color: #555;
+}
+
+.description {
+    margin: 12px 0;
+    font-size: 16px;
+    color: #666;
+}
+
+.buy-link {
+    font-size: 15px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.buy-link:hover {
+    text-decoration: underline;
+}
+
+footer {
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex-direction: column;
+        text-align: center;
+        height: auto;
+    }
+
+    .image {
+        margin-bottom: 15px;
+        width: 100%;
+        height: auto;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+}
