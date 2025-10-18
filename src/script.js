@@ -7,7 +7,7 @@ let activeIndex = -1;
 
 function fetchBookReviews() {
     const container = document.getElementById('reviews-container');
-    container.textContent = 'Loading...';
+    renderSkeletons(container, 4);
     const cacheKey = 'nyt_books_cache_v1';
     const ttlMs = 10 * 60 * 1000; // 10 minutes
     try {
@@ -15,22 +15,25 @@ function fetchBookReviews() {
         if (cached && (Date.now() - cached.timestamp) < ttlMs && Array.isArray(cached.data)) {
             bookReviews = cached.data;
             currentList = bookReviews.slice();
-            visibleCount = Math.min(pageSize, currentList.length);
+            const savedVisible = getVisibleCountFromCache();
+            visibleCount = Math.min(savedVisible || pageSize, currentList.length);
             displayReviews(currentList);
             container.innerHTML = '';
             return;
         }
     } catch {}
 
-    fetch('https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=ZVFsJPMKAysNNRwaeKjLsXP1I6IfBlRK')
-        .then(response => response.json())
+    fetchBookData()
         .then(data => {
             bookReviews = data.results.books || [];
             try { localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: bookReviews })); } catch {}
             currentList = bookReviews.slice();
-            visibleCount = Math.min(pageSize, currentList.length);
+            const savedVisible = getVisibleCountFromCache();
+            visibleCount = Math.min(savedVisible || pageSize, currentList.length);
             displayReviews(currentList);
             container.innerHTML = '';
+            restoreSearchFromCache();
+            setVisibleCountInCache(visibleCount);
         })
         .catch(() => {
             container.textContent = 'Failed to load reviews. Please try again later.';
@@ -71,6 +74,23 @@ function displayReviews(reviews) {
     }
 }
 
+function renderSkeletons(container, count) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'skeleton-card';
+        wrap.innerHTML = `
+            <div class="skeleton-box skeleton-image"></div>
+            <div class="skeleton-lines">
+                <div class="skeleton-box skeleton-line long"></div>
+                <div class="skeleton-box skeleton-line med"></div>
+                <div class="skeleton-box skeleton-line short"></div>
+            </div>
+        `;
+        container.appendChild(wrap);
+    }
+}
+
 function handleSearch() {
     const searchTerm = document.getElementById('search-bar').value.toLowerCase();
     const filteredReviews = bookReviews.filter(review =>
@@ -80,6 +100,7 @@ function handleSearch() {
     );
     currentList = filteredReviews;
     visibleCount = Math.min(pageSize, currentList.length);
+    setVisibleCountInCache(visibleCount);
     displayReviews(currentList);
 }
 
@@ -131,6 +152,7 @@ document.getElementById('search-bar').addEventListener('input', (e) => {
         showSuggestions();
         handleSearch();
     }, 300);
+    try { localStorage.setItem('nyt_search_query', e.target.value || ''); } catch {}
 });
 
 document.getElementById('search-bar').addEventListener('keyup', (event) => {
@@ -152,6 +174,7 @@ const loadMoreBtn = document.getElementById('load-more');
 if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', () => {
         visibleCount = Math.min(visibleCount + pageSize, currentList.length);
+        setVisibleCountInCache(visibleCount);
         displayReviews(currentList);
     });
 }
@@ -186,4 +209,15 @@ document.getElementById('search-bar').addEventListener('keydown', (e) => {
         }
     });
 });
+
+function fetchBookData() {
+    const proxyUrl = '/.netlify/functions/nyt-proxy';
+    const directUrl = 'https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=ZVFsJPMKAysNNRwaeKjLsXP1I6IfBlRK';
+    return fetch(proxyUrl, { mode: 'cors' })
+        .then(r => {
+            if (!r.ok) throw new Error('proxy_failed');
+            return r.json();
+        })
+        .catch(() => fetch(directUrl).then(r => r.json()));
+}
 
