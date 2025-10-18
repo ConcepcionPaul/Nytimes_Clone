@@ -10,14 +10,17 @@
 <body>
     <header>
         <h1>NyTimes Clone Book Review</h1>
-        <div class="search-bar">
-            <input type="text" placeholder="Search books..." id="search-bar">
+        <div class="search-bar" role="search">
+            <input type="text" placeholder="Search books..." id="search-bar" aria-autocomplete="list" aria-controls="suggestions-container" aria-expanded="false">
             <button id="search-button"><img src="https://res.cloudinary.com/doka2wyj0/image/upload/v1727447074/ja/icon/s6j1br9udh6bz4bhki8o.png" alt="search"></button>
-            <div id="suggestions-container" class="suggestions"></div> <!-- Suggestions container -->
+            <div id="suggestions-container" class="suggestions" role="listbox"></div> <!-- Suggestions container -->
         </div>
     </header>
 
-    <div id="reviews-container"></div>
+    <div id="reviews-container" aria-live="polite" role="list"></div>
+    <div style="text-align:center; margin: 20px 0;">
+        <button id="load-more" aria-label="Load more reviews">Load More</button>
+    </div>
 
     <footer>
         Copyright &copy; 2024 The New York Times Company. All Rights Reserved.

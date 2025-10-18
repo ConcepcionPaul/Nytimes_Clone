@@ -63,7 +63,8 @@ nav a:hover {
     flex-direction: column;
     align-items: center;
     position: relative;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .search-bar input {
@@ -88,6 +89,7 @@ nav a:hover {
     position: absolute;
     right: 15px;
     top: 12px;
+    cursor: pointer;
 }
 
 .search-bar button img {
@@ -97,7 +99,7 @@ nav a:hover {
 #suggestions-container {
     position: absolute;
     top: 60px;
-    background-color: rgb(0, 0, 0);
+    background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 5px;
     max-height: 220px;
@@ -121,6 +123,13 @@ nav a:hover {
 
 .suggestion:hover {
     background-color: #f1f1f1;
+}
+
+.suggestion:focus,
+.suggestion.active {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+    background-color: #e9f2ff;
 }
 
 #reviews-container {
