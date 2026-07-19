@@ -9,7 +9,7 @@ function fetchBookReviews() {
     const container = document.getElementById('reviews-container');
     container.setAttribute('aria-busy', 'true');
     renderSkeletons(container, 4);
-    const cacheKey = 'nyt_books_cache_v1';
+    const cacheKey = 'nyt_books_cache_v2';
     const ttlMs = 10 * 60 * 1000; // 10 minutes
     try {
         const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
@@ -26,7 +26,7 @@ function fetchBookReviews() {
 
     fetchBookData()
         .then(data => {
-            bookReviews = data.results.books || [];
+            bookReviews = data;
             try { localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: bookReviews })); } catch {}
             currentList = bookReviews.slice();
             const savedVisible = getVisibleCountFromCache();
@@ -246,14 +246,47 @@ document.getElementById('search-bar').addEventListener('keydown', (e) => {
 });
 
 function fetchBookData() {
-    const proxyUrl = '/.netlify/functions/nyt-proxy';
-    const directUrl = 'https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=ZVFsJPMKAysNNRwaeKjLsXP1I6IfBlRK';
-    return fetch(proxyUrl, { mode: 'cors' })
-        .then(r => {
-            if (!r.ok) throw new Error('proxy_failed');
-            return r.json();
-        })
-        .catch(() => fetch(directUrl).then(r => r.json()));
+    const lists = [
+        'hardcover-fiction',
+        'trade-fiction-paperback',
+        'combined-print-and-e-book-fiction',
+        'paperback-fiction',
+        'mass-market-paperback',
+        'hardcover-nonfiction',
+        'trade-nonfiction',
+        'combined-print-and-e-book-nonfiction'
+    ];
+    const apiKey = 'ZVFsJPMKAysNNRwaeKjLsXP1I6IfBlRK';
+
+    const requests = lists.map(list => {
+        const proxyUrl = `/.netlify/functions/nyt-proxy?list=${encodeURIComponent(list)}`;
+        const directUrl = `https://api.nytimes.com/svc/books/v3/lists/current/${list}.json?api-key=${apiKey}`;
+        return fetch(proxyUrl, { mode: 'cors' })
+            .then(response => {
+                if (!response.ok) throw new Error('proxy_failed');
+                return response.json();
+            })
+            .catch(() => fetch(directUrl).then(response => {
+                if (!response.ok) throw new Error(`list_failed_${list}`);
+                return response.json();
+            }));
+    });
+
+    return Promise.allSettled(requests).then(results => {
+        const books = results
+            .filter(result => result.status === 'fulfilled')
+            .flatMap(result => result.value?.results?.books || []);
+
+        if (!books.length) throw new Error('all_lists_failed');
+
+        const seen = new Set();
+        return books.filter(book => {
+            const identity = book.primary_isbn13 || book.primary_isbn10 || `${book.title}|${book.author}`;
+            if (seen.has(identity)) return false;
+            seen.add(identity);
+            return true;
+        });
+    });
 }
 
 const today = new Date();
