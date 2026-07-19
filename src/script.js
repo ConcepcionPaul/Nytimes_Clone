@@ -177,7 +177,9 @@ function showSuggestions() {
     }
 }
 
-window.onload = fetchBookReviews;
+// Parcel's module bundle can finish after the window load event on cached pages.
+// Start immediately because this script is deferred and the page DOM already exists.
+fetchBookReviews();
 
 document.getElementById('search-bar').addEventListener('input', (e) => {
     clearTimeout(debounceTimer);
