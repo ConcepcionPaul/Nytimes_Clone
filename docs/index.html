@@ -1,1 +1,58 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0a0a0a"><link rel="preconnect" href="https://api.nytimes.com"><link rel="preconnect" href="https://res.cloudinary.com" crossorigin><link rel="preload" as="image" href="https://res.cloudinary.com/doka2wyj0/image/upload/v1727497646/ja/icon/yem1fwofrhvkqi7k191f.jpg"><title>NYTimes Clone Book Review</title><link rel="stylesheet" href="index.2da419fd.css?v=2"><script type="module" src="index.628286c6.js?v=2" defer></script></head><body> <header> <h1>NyTimes Clone Book Review</h1> <div class="search-bar" role="search"> <input type="text" placeholder="Search books..." id="search-bar" aria-label="Search books" aria-autocomplete="list" aria-controls="suggestions-container" aria-expanded="false"> <button id="search-button" aria-label="Search"><img src="https://res.cloudinary.com/doka2wyj0/image/upload/v1727447074/ja/icon/s6j1br9udh6bz4bhki8o.png" alt="search"></button> <div id="suggestions-container" class="suggestions" role="listbox"></div>  </div> </header> <main role="main"> <div id="reviews-container" aria-live="polite" role="list"></div> <div style="text-align:center; margin: 20px 0;"><button id="load-more" aria-label="Load more reviews">Load More</button></div> </main> <footer> Copyright &copy; 2024 The New York Times Company. All Rights Reserved. </footer> </body></html>
+<!DOCTYPE html><html lang=en><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=theme-color content=#f7f5f0><meta name=description content="Discover the latest New York Times hardcover fiction bestsellers."><title>The Reading List — Hardcover Fiction</title><link rel=preconnect href=https://storage.googleapis.com><link rel=stylesheet href=Nytimes_Clone.323aad16.css><script type=module src=Nytimes_Clone.c9148f44.js defer></script><body>
+    <a class=skip-link href=#reviews-container>Skip to book reviews</a>
+
+    <header class=site-header>
+        <div class=masthead>
+            <a class=brand href=# aria-label="The Reading List home">
+                <span class=brand__eyebrow>The New York Times</span>
+                <span class=brand__name>The Reading List</span>
+            </a>
+            <p class=masthead__date id=current-date></p>
+        </div>
+
+        <div class=hero>
+            <div class=hero__copy>
+                <p class=kicker>Books &amp; Culture</p>
+                <h1>Stories worth<br>staying up for.</h1>
+                <p class=hero__intro>Explore this week’s bestselling hardcover fiction, with concise summaries to help you find your next great read.</p>
+            </div>
+
+            <div class=search-panel>
+                <label for=search-bar>Find a book</label>
+                <div class=search-bar role=search>
+                    <svg aria-hidden=true class=search-icon viewBox="0 0 24 24"><path d="m21 21-4.35-4.35M19 11.5A7.5 7.5 0 1 1 4 11.5a7.5 7.5 0 0 1 15 0"/></svg>
+                    <input type=search placeholder="Search title, author, or keyword" id=search-bar autocomplete=off aria-autocomplete=list aria-controls=suggestions-container aria-expanded=false>
+                    <button id=search-button type=button>Search</button>
+                    <div id=suggestions-container class=suggestions role=listbox></div>
+                </div>
+                <p class=search-panel__hint>Try “mystery”, an author’s name, or a title.</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class=results-section aria-labelledby=results-title>
+            <div class=section-heading>
+                <div>
+                    <p class=kicker>Current list</p>
+                    <h2 id=results-title>Hardcover Fiction</h2>
+                </div>
+                <p id=results-count class=results-count aria-live=polite>Loading this week’s picks…</p>
+            </div>
+
+            <div id=reviews-container aria-live=polite aria-busy=true role=list></div>
+            <div class=load-more-wrap>
+                <button id=load-more type=button>Load more books</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class=footer__inner>
+            <span class=footer__brand>The Reading List</span>
+            <p>Book data provided by The New York Times Books API.</p>
+            <p>© <span id=copyright-year></span> The New York Times Company.</p>
+        </div>
+    </footer>
+
+

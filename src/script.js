@@ -7,6 +7,7 @@ let activeIndex = -1;
 
 function fetchBookReviews() {
     const container = document.getElementById('reviews-container');
+    container.setAttribute('aria-busy', 'true');
     renderSkeletons(container, 4);
     const cacheKey = 'nyt_books_cache_v1';
     const ttlMs = 10 * 60 * 1000; // 10 minutes
@@ -18,7 +19,7 @@ function fetchBookReviews() {
             const savedVisible = getVisibleCountFromCache();
             visibleCount = Math.min(savedVisible || pageSize, currentList.length);
             displayReviews(currentList);
-            container.innerHTML = '';
+            restoreSearchFromCache();
             return;
         }
     } catch {}
@@ -31,12 +32,13 @@ function fetchBookReviews() {
             const savedVisible = getVisibleCountFromCache();
             visibleCount = Math.min(savedVisible || pageSize, currentList.length);
             displayReviews(currentList);
-            container.innerHTML = '';
             restoreSearchFromCache();
             setVisibleCountInCache(visibleCount);
         })
         .catch(() => {
-            container.textContent = 'Failed to load reviews. Please try again later.';
+            container.setAttribute('aria-busy', 'false');
+            container.innerHTML = '<div class="empty-state"><h3>We couldn’t load the list.</h3><p>Please check your connection and refresh the page.</p></div>';
+            updateResultsCount(0, true);
         });
 }
 
@@ -44,6 +46,10 @@ function displayReviews(reviews) {
     const container = document.getElementById('reviews-container');
     container.innerHTML = ''; 
     const toRender = reviews.slice(0, visibleCount || pageSize);
+    container.setAttribute('aria-busy', 'false');
+    if (!reviews.length) {
+        container.innerHTML = '<div class="empty-state"><h3>No books found.</h3><p>Try a different title, author, or keyword.</p></div>';
+    }
     toRender.forEach(review => {
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('card');
@@ -51,13 +57,13 @@ function displayReviews(reviews) {
 
         cardDiv.innerHTML = `
             <div class="image">
-                <img src="${review.book_image}" alt="${review.title} cover" class="book-cover">
+                <img src="${review.book_image}" alt="Cover of ${review.title}" class="book-cover" loading="lazy" decoding="async">
             </div>
             <div class="card__info">
-                <span class="title">${review.title}</span>
+                <a class="title" href="${review.amazon_product_url}" target="_blank" rel="noopener noreferrer">${review.title}</a>
                 <p class="author">By ${review.author}</p>
                 <p class="description">${review.description}</p>
-                <a href="${review.amazon_product_url}" target="_blank" class="buy-link">Buy on Amazon</a>
+                <a href="${review.amazon_product_url}" target="_blank" rel="noopener noreferrer" class="buy-link">View book <span aria-hidden="true">↗</span></a>
             </div>
         `;
 
@@ -72,6 +78,33 @@ function displayReviews(reviews) {
             loadMoreBtn.style.display = 'none';
         }
     }
+    updateResultsCount(reviews.length);
+}
+
+function updateResultsCount(total, isError = false) {
+    const count = document.getElementById('results-count');
+    if (!count) return;
+    count.textContent = isError ? 'List unavailable' : `${total} ${total === 1 ? 'book' : 'books'} found`;
+}
+
+function getVisibleCountFromCache() {
+    const saved = Number.parseInt(localStorage.getItem('nyt_visible_count') || '', 10);
+    return Number.isFinite(saved) && saved > 0 ? saved : pageSize;
+}
+
+function setVisibleCountInCache(count) {
+    try { localStorage.setItem('nyt_visible_count', String(count)); } catch {}
+}
+
+function restoreSearchFromCache() {
+    try {
+        const savedQuery = localStorage.getItem('nyt_search_query') || '';
+        const input = document.getElementById('search-bar');
+        if (savedQuery && input) {
+            input.value = savedQuery;
+            handleSearch();
+        }
+    } catch {}
 }
 
 function renderSkeletons(container, count) {
@@ -161,6 +194,8 @@ document.getElementById('search-bar').addEventListener('keyup', (event) => {
     }
 });
 
+document.getElementById('search-button').addEventListener('click', handleSearch);
+
 document.addEventListener('click', (e) => {
     const container = document.querySelector('.search-bar');
     const suggestionsContainer = document.getElementById('suggestions-container');
@@ -220,4 +255,8 @@ function fetchBookData() {
         })
         .catch(() => fetch(directUrl).then(r => r.json()));
 }
+
+const today = new Date();
+document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+document.getElementById('copyright-year').textContent = today.getFullYear();
 
